@@ -1,0 +1,66 @@
+{
+    
+  /*
+  this is a JSON file. The syntax is pretty straightforward but 
+  pay attention to the commas: the last member of a list doesn't need one
+  */
+    
+  //title, description, version
+  "name": "Palette Swap",
+  "description": "Make your web browsing experience more colorful! :D",
+  "version": "1",
+
+  //manifest version as for 2015 keep it 2
+  "manifest_version": 2,
+    
+  /*
+  The activeTab permission gives an extension temporary access to the currently active tab when the user invokes the extension - for example by clicking its browser action. Access to the tab lasts until the tab is navigated or closed.
+  
+  The extension can also access bookmarks, browsing data, clipboard (CTRL+C), cookies, location, text to speech, and much more 
+  https://developer.chrome.com/extensions/declare_permissions
+  */
+    
+  "permissions": [
+    "activeTab",
+    "tabs"
+  ],
+  
+  /*
+  Content scripts are what we are going to use to inject code into the current page
+  https://developer.chrome.com/extensions/content_scripts
+  */
+    
+  "content_scripts": [
+    {
+      //Required field! Which pages do you want to affect? This is for every page
+      //mind some websites use the https (secure) protocol
+      "matches": ["http://*/*", "https://*/*"],
+      
+      //this example only works on the syllabus and on facebook
+      //"matches": ["http://internetresistance.molleindustria.org/", "https://www.facebook.com/"],
+        
+      //for more see: https://developer.chrome.com/extensions/match_patterns
+      
+      //a list of javascripts to be injected in the page
+      //the order matters put all the includes first
+      "js": ["js/jquery.js", "js/findAndReplaceDOMText.js", "content.js"],
+        
+      //when to run the script (if you want to tweak the page probably at the end) 
+      //just before it's visualized
+      "run_at": "document_end"
+    }
+  ],
+    
+  /*
+  list of resources that can be accessed in a webpage via extension.getURL 
+  https://developer.chrome.com/extensions/manifest/web_accessible_resources
+  */
+  "web_accessible_resources": [
+    "resources/*"
+  ],
+    
+  "icons": { "128": "icon128.png",
+             "48": "icon48.png",
+             "16": "icon16.png" }
+  
+}
