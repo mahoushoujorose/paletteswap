@@ -26,6 +26,7 @@ function getRandomPaletteURL() {
  */
 function getPalette() {
     var colors = [];
+    try {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", getRandomPaletteURL(), false);
     xhr.send();
@@ -40,6 +41,12 @@ function getPalette() {
         paletteName = xmlDoc.getElementsByTagName("title").item(0).innerHTML;
         paletteName = paletteName.replace("<![CDATA[", "").replace("]]>", "");
         console.log("You are now using the palette " + paletteName + "!");
+    } 
+    } catch(err) {
+        for(i = 0; i < 5; i++) {
+            colors[i] = Math.floor(Math.random() * 16777216).toString(16)
+            console.log("#" + colors[i]);
+        }
     }
     
     return colors;
@@ -73,11 +80,14 @@ function setSitePalette(palette) {
     stylesheet.innerHTML += "a { color: #" + color2 + " }";
     
     // Recolor properties specific to the site's stylesheets.
+    console.log("Stylesheets: " + document.styleSheets.length);
     for(var style = 0; style < document.styleSheets.length; style++) {
         var classes = document.styleSheets[style].rules || document.styleSheets[0].cssRules;
+        if(classes != null) {
         for(var c = 0; c < classes.length; c++) {
             var currentRule = classes[c].style; // CSSStyleDeclaration
-            // Properties to check for: color background-color
+            if(currentRule) {
+            // Properties to check for: color background-color bgcolor
             if(currentRule.getPropertyValue('color') !== null) {
                 valString = currentRule.getPropertyValue('color');
                 //console.log("Element " + classes[c].selectorText + " has color " + valString + ".");
@@ -91,6 +101,17 @@ function setSitePalette(palette) {
                 newColor = "#" + testPalette[Math.floor(Math.random() * 5)];
                 stylesheet.innerHTML += classes[c].selectorText + " { background-color: " + newColor + "}";
             }
+            if(currentRule.getPropertyValue('bgcolor') !== null) {
+                valString = currentRule.getPropertyValue('bgcolor');
+                console.log("Element " + classes[c].selectorText + " has bgcolor " + valString + ".");
+                // Select the new color to use.
+                newColor = "#" + testPalette[Math.floor(Math.random() * 5)];
+                stylesheet.innerHTML += classes[c].selectorText + " { bgcolor: " + newColor + "}";
+            }
+            }
+        }
+        } else {
+            console.log("No stylesheet info?");
         }
     }
     document.body.appendChild(stylesheet);
